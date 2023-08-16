@@ -45,6 +45,7 @@ function menu () {
                 break;
             case choices[1]:
                 // View all roles
+                viewRole();
                 break;
             case choices[2]:
                 // View all employees
@@ -55,6 +56,7 @@ function menu () {
                 break;
             case choices[4]:
                 // Add a role
+                addRole();
                 break;
             case choices[5]:
                 // Add an employee
@@ -87,7 +89,7 @@ function viewRole() {
     const sql = 'SELECT * FROM role;';
     db.query(sql, (err, data) => {
         if (err) {
-            console.error('Error viewing role');
+            console.error('Error viewing role', err);
         } else {
             console.table(data);
             menu();
@@ -120,14 +122,42 @@ function addDepartment() {
                     console.log('Department added');
                     menu();
                 }
-                // db.end();
             });
         });
 }
 
 // a function that prompts the user to add a role to the database
 function addRole() {
-
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'Enter the name of the role you would like to add:',
+                name: 'roleName',
+            },
+            {
+                type: 'input',
+                message: 'Enter the salary of the role:',
+                name: 'salary',
+            },
+            {
+                type: 'input',
+                message: 'Choose the department id this role belongs to:',
+                name: 'department',
+            }
+        ])
+        .then((data) => {
+            console.log(data);
+            const sql ='INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?);';
+            db.query(sql, [data.roleName, data.salary, data.department], (err, results) => {
+                if (err) {
+                    console.error('Error adding role:', err);
+                } else {
+                    console.log('Role added');
+                    menu();
+                }
+            });
+        });
 }
 
 // a function that prompts the user to add an employee to the database
