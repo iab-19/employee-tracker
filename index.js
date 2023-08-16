@@ -41,44 +41,35 @@ function menu () {
         switch (data.choice){
             case choices[0]:
                 // View all departments
-                print = 'You chose 1';
                 viewDepartment();
                 break;
             case choices[1]:
                 // View all roles
-                print = 'You chose 2';
                 break;
             case choices[2]:
                 // View all employees
-                print = 'You chose 3';
                 break;
             case choices[3]:
                 // Add a department
                 addDepartment();
-                print = 'You chose 4';
                 break;
             case choices[4]:
                 // Add a role
-                print = 'You chose 5';
                 break;
             case choices[5]:
                 // Add an employee
-                print = 'You chose 6';
                 break;
             case choices[6]:
                 // Update an employee
-                print = 'You chose 7';
                 updateEmployee();
                 break;
         }
-    // return print;
-        console.log(print);
     // console.log(data)
     })
 
 }
 
-
+// a function that displays all departments in the database
 function viewDepartment() {
     const sql = 'SELECT * FROM department;';
     db.query(sql, (err, data) => {
@@ -91,15 +82,25 @@ function viewDepartment() {
     })
 }
 
+// a function that displays all roles in the database
 function viewRole() {
-
+    const sql = 'SELECT * FROM role;';
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error('Error viewing role');
+        } else {
+            console.table(data);
+            menu();
+        }
+    })
 }
 
+// a function that displays all employees in the database
 function viewEmployee() {
 
 }
 
-// when 'view all departments' is selected
+// a function that prompts the user to add a department to the database
 function addDepartment() {
     inquirer
         .prompt([
@@ -119,19 +120,22 @@ function addDepartment() {
                     console.log('Department added');
                     menu();
                 }
-                db.end();
+                // db.end();
             });
         });
 }
 
+// a function that prompts the user to add a role to the database
 function addRole() {
 
 }
 
+// a function that prompts the user to add an employee to the database
 function addEmployee() {
 
 }
 
+// a function that asks the user which employee role would they like to update
 function updateEmployee() {
     const sql ='SELECT * FROM role';
     db.query(sql, (err, results) => {
@@ -168,7 +172,7 @@ function updateEmployee() {
                 console.log('Employee updated');
                 menu();
             }
-            db.end();
+            // db.end();
         });
     });
 })
