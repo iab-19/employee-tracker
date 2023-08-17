@@ -200,17 +200,25 @@ function addEmployee() {
             name: 'role',
             choices: roles,
         },
+        // ?Does this employee have a manager
+        {
+            type: 'confirm',
+            message: "Does this employee have a manager",
+            name: 'hasManager',
+        },
         {
             type: 'list',
             message: "Who is this employee's manager:",
             name: 'manager',
             choices: managers,
+            default: 'null',
+            when: (data) => data.hasManager == true,
         }
     ])
     .then((data) => {
         console.log(data);
         const sql ='INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);';
-        db.query(sql, [data.firstName, data.lastName, data.roles, data.managers], (err, results) => {
+        db.query(sql, [data.firstName, data.lastName, data.role, data.manager], (err, results) => {
             if (err) {
                 console.error('Error adding employee:', err);
             } else {
@@ -260,17 +268,11 @@ function updateEmployee() {
                 console.log('Employee updated');
                 menu();
             }
-            // db.end();
         });
     });
 })
 })
 }
 
+// Displays the menu upon starup
 menu();
-// Runs schema.sql upon startup to initialize the databases
-// function init() {
-//     connection.query(
-
-//     )
-// }
