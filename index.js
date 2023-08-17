@@ -5,9 +5,6 @@ require('dotenv').config();
 const db = mysql.createConnection(
     {
         host: 'localhost',
-        // user: 'root',
-        // password: 'exceptionTidy!23',
-        // database: 'employee_db'
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME
@@ -68,7 +65,6 @@ function menu () {
                 updateEmployee();
                 break;
         }
-    // console.log(data)
     })
 
 }
@@ -88,7 +84,7 @@ function viewDepartment() {
 
 // a function that displays all roles in the database
 function viewRole() {
-    const sql = 'SELECT * FROM role;';
+    const sql = 'SELECT role.title AS job_title, role.id AS role_id, department.name AS department, role.salary FROM role INNER JOIN department ON role.department_id = department.id;';
     db.query(sql, (err, data) => {
         if (err) {
             console.error('Error viewing role', err);
@@ -138,6 +134,11 @@ function addDepartment() {
 
 // a function that prompts the user to add a role to the database
 function addRole() {
+    const sql ='SELECT * FROM department';
+    db.query(sql, (err, results) => {
+        const departments = results.map(department => {
+            return {name:department.name, value:department.id}
+        });
     inquirer
         .prompt([
             {
@@ -151,9 +152,10 @@ function addRole() {
                 name: 'salary',
             },
             {
-                type: 'input',
-                message: 'Choose the department id this role belongs to:',
+                type: 'list',
+                message: 'Choose the department this role belongs to:',
                 name: 'department',
+                choices: departments,
             }
         ])
         .then((data) => {
@@ -168,6 +170,7 @@ function addRole() {
                 }
             });
         });
+    })
 }
 
 // a function that prompts the user to add an employee to the database
