@@ -25,7 +25,7 @@
 
 
   ## Installation
-  Node.js and Inquirer(v8.2.4) are required to run tis application.
+  Node.js, mysql2, and Inquirer(v8.2.4) are required to run tis application.
 
   <!-- What are they steps required to install your project? Provide a step-by-step description of how to get the development environment running. -->
 
