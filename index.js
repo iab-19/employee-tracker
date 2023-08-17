@@ -1,6 +1,6 @@
-const inquirer = require('inquirer'); // allow use of inquirer
-const mysql = require('mysql2');
-require('dotenv').config();
+const inquirer = require('inquirer'); // Allow use of inquirer
+const mysql = require('mysql2'); // Allow use of mysql2
+require('dotenv').config(); // Use dotenv to protect credentials
 
 const db = mysql.createConnection(
     {
@@ -13,6 +13,7 @@ const db = mysql.createConnection(
     console.log('Connected to the employees_db database.')
 );
 
+// Options to be displayed by inquirer
 const choices = [
     'View all departments',
     'View all roles',
@@ -69,7 +70,8 @@ function menu () {
 
 }
 
-// a function that displays all departments in the database
+// A function that displays all departments in the database
+// and returns to the main menu when finished
 function viewDepartment() {
     const sql = 'SELECT * FROM department;';
     db.query(sql, (err, data) => {
@@ -82,7 +84,8 @@ function viewDepartment() {
     })
 }
 
-// a function that displays all roles in the database
+// A function that displays all roles in the database
+// and returns to the main menu when finished
 function viewRole() {
     const sql = 'SELECT role.title AS job_title, role.id AS role_id, department.name AS department, role.salary FROM role INNER JOIN department ON role.department_id = department.id;';
     db.query(sql, (err, data) => {
@@ -95,7 +98,8 @@ function viewRole() {
     })
 }
 
-// a function that displays all employees in the database
+// A function that displays all employees in the database
+// and returns to the main menu when finished
 function viewEmployee() {
     const sql = 'SELECT employee.id AS employee_id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department, role.salary, employee.manager_id AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id;';
     db.query(sql, (err, data) => {
@@ -108,7 +112,8 @@ function viewEmployee() {
     })
 }
 
-// a function that prompts the user to add a department to the database
+// A function that prompts the user to add a department to the database
+// and returns to the main menu when finished
 function addDepartment() {
     inquirer
         .prompt([
@@ -120,6 +125,7 @@ function addDepartment() {
         ])
         .then((data) => {
             console.log(data);
+            // Add to the department table with the user data collected by inquirer
             const sql ='INSERT INTO department (name) VALUES (?)';
             db.query(sql, [data.departmentName], (err, results) => {
                 if (err) {
@@ -132,8 +138,11 @@ function addDepartment() {
         });
 }
 
-// a function that prompts the user to add a role to the database
+// A function that prompts the user to add a role to the database
+// and returns to the main menu when finished
 function addRole() {
+    // Select all rows from the department table, map the data
+    // into an object and use those objects as choices for the inquirer prompt
     const sql ='SELECT * FROM department';
     db.query(sql, (err, results) => {
         const departments = results.map(department => {
@@ -160,6 +169,7 @@ function addRole() {
         ])
         .then((data) => {
             console.log(data);
+            // Add to the role table with the user data collected by inquirer
             const sql ='INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?);';
             db.query(sql, [data.roleName, data.salary, data.department], (err, results) => {
                 if (err) {
@@ -173,13 +183,18 @@ function addRole() {
     })
 }
 
-// a function that prompts the user to add an employee to the database
+// A function that prompts the user to add an employee to the database
+// and returns to the main menu when finished
 function addEmployee() {
+    // Select all rows from the role table, map the data
+    // into an object and use those objects as choices for the inquirer prompt
     const sql ='SELECT * FROM role';
     db.query(sql, (err, results) => {
         const roles = results.map(role => {
             return {name:role.title, value:role.id}
         });
+    // Select all rows from the employee table, map the data
+    // into an object and use those objects as choices for the inquirer prompt
     const sql ='SELECT * FROM employee';
     db.query(sql, (err, results) => {
         const managers = results.map(employee => {
@@ -203,7 +218,6 @@ function addEmployee() {
             name: 'role',
             choices: roles,
         },
-        // ?Does this employee have a manager
         {
             type: 'confirm',
             message: "Does this employee have a manager",
@@ -220,6 +234,7 @@ function addEmployee() {
     ])
     .then((data) => {
         console.log(data);
+        // Add to the employee table with the user data collected by inquirer
         const sql ='INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);';
         db.query(sql, [data.firstName, data.lastName, data.role, data.manager], (err, results) => {
             if (err) {
@@ -234,13 +249,19 @@ function addEmployee() {
 })
 }
 
-// a function that asks the user which employee role would they like to update
+// A function that asks the user which employee role would they like to update
+// and returns to the main menu when finished
 function updateEmployee() {
+    // Select all rows from the employee table, map the data
+    // into an object and use those objects as choices for the inquirer prompt
     const sql ='SELECT * FROM employee';
     db.query(sql, (err, results) => {
         const employees = results.map(employee => {
             return {name:employee.first_name+' '+employee.last_name, value:employee.id}
         });
+
+    // Select all rows from the role table, map the data
+    // into an object and use those objects as choices for the inquirer prompt
     const sql ='SELECT * FROM role';
     db.query(sql, (err, results) => {
         const roles = results.map(role => {
@@ -263,6 +284,7 @@ function updateEmployee() {
     ])
     .then((data) => {
         console.log(data);
+        // Update the employee table with the user data collected by inquirer
         const sql ='UPDATE employee SET role_id=? WHERE id=?';
         db.query(sql, [data.employeeRole, data.employee], (err, results) => {
             if (err) {
@@ -277,5 +299,5 @@ function updateEmployee() {
 })
 }
 
-// Displays the menu upon starup
+// Display the menu upon starup
 menu();
