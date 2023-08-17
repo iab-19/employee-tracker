@@ -5,12 +5,12 @@ require('dotenv').config();
 const db = mysql.createConnection(
     {
         host: 'localhost',
-        user: 'root',
-        password: 'exceptionTidy!23',
-        database: 'employee_db'
-        // process.env.DB_USER,
-        // process.env.DB_PASSWORD,
-        // process.env.DB_NAME
+        // user: 'root',
+        // password: 'exceptionTidy!23',
+        // database: 'employee_db'
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME
 
     },
     console.log('Connected to the employees_db database.')
@@ -49,6 +49,7 @@ function menu () {
                 break;
             case choices[2]:
                 // View all employees
+                viewEmployee();
                 break;
             case choices[3]:
                 // Add a department
@@ -99,7 +100,15 @@ function viewRole() {
 
 // a function that displays all employees in the database
 function viewEmployee() {
-
+    const sql = 'SELECT employee.id AS employee_id, employee.first_name, employee.last_name, role.title AS job_title, department.name AS department, role.salary, employee.manager_id AS manager FROM employee INNER JOIN role ON employee.role_id = role.id INNER JOIN department ON role.department_id = department.id;';
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error('Error viewing employee', err);
+        } else {
+            console.table(data);
+            menu();
+        }
+    })
 }
 
 // a function that prompts the user to add a department to the database
@@ -162,20 +171,54 @@ function addRole() {
 
 // a function that prompts the user to add an employee to the database
 function addEmployee() {
-
+    inquirer
+    .prompt([
+        {
+            type: 'input',
+            message: 'Enter the first name the employee you would like to add:',
+            name: 'firstName',
+        },
+        {
+            type: 'input',
+            message: 'Enter the last name the employee you would like to add:',
+            name: 'lastName',
+        },
+        {
+            type: 'input',
+            message: 'Enter the role of this employee:',
+            name: 'role',
+        },
+        {
+            type: 'input',
+            message: "Enter this employee's manager:",
+            name: 'manager',
+        }
+    ])
+    .then((data) => {
+        console.log(data);
+        const sql ='INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);';
+        db.query(sql, [data.roleName, data.salary, data.department], (err, results) => {
+            if (err) {
+                console.error('Error adding employee:', err);
+            } else {
+                console.log('Employee added');
+                menu();
+            }
+        });
+    });
 }
 
 // a function that asks the user which employee role would they like to update
 function updateEmployee() {
-    const sql ='SELECT * FROM role';
-    db.query(sql, (err, results) => {
-        const roles = results.map(role => {
-            return {name:role.title, value:role.id}
-        });
     const sql ='SELECT * FROM employee';
     db.query(sql, (err, results) => {
         const employees = results.map(employee => {
             return {name:employee.first_name+' '+employee.last_name, value:employee.id}
+        });
+    const sql ='SELECT * FROM role';
+    db.query(sql, (err, results) => {
+        const roles = results.map(role => {
+            return {name:role.title, value:role.id}
         });
     inquirer
     .prompt([
