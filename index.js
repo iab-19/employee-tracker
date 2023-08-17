@@ -16,10 +16,10 @@ const db = mysql.createConnection(
 // Options to be displayed by inquirer
 const choices = [
     'View all departments',
-    'View all roles',
-    'View all employees',
     'Add a department',
+    'View all roles',
     'Add a role',
+    'View all employees',
     'Add an employee',
     'Update an employee'
 ];
@@ -42,20 +42,20 @@ function menu () {
                 viewDepartment();
                 break;
             case choices[1]:
-                // View all roles
-                viewRole();
-                break;
-            case choices[2]:
-                // View all employees
-                viewEmployee();
-                break;
-            case choices[3]:
                 // Add a department
                 addDepartment();
                 break;
-            case choices[4]:
+            case choices[2]:
+                // View all roles
+                viewRole();
+                break;
+            case choices[3]:
                 // Add a role
                 addRole();
+                break;
+            case choices[4]:
+                // View all employees
+                viewEmployee();
                 break;
             case choices[5]:
                 // Add an employee
