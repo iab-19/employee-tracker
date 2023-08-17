@@ -25,7 +25,15 @@
 
 
   ## Installation
-  Node.js, mysql2, and Inquirer(v8.2.4) are required to run tis application.
+  Node.js, mysql2, and Inquirer(v8.2.4) are required to run this application.  
+  To run this application, follow these steps:
+  1. Open a command line
+  2. Type in 'mysql -u root -p' and enter your mysql password
+  3. Type 'SOURCE db/schema.sql' to create the database and tables
+  4. Type 'SOURCE db/seeds.sql' to populate the tables
+  5. Type 'quit' to exit mysql2
+  6. Type 'node index.js' to run application
+  7. Use the arrow keys to select the option you want and follow the instructions
 
   <!-- What are they steps required to install your project? Provide a step-by-step description of how to get the development environment running. -->
 
