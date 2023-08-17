@@ -61,6 +61,7 @@ function menu () {
                 break;
             case choices[5]:
                 // Add an employee
+                addEmployee();
                 break;
             case choices[6]:
                 // Update an employee
@@ -171,6 +172,16 @@ function addRole() {
 
 // a function that prompts the user to add an employee to the database
 function addEmployee() {
+    const sql ='SELECT * FROM role';
+    db.query(sql, (err, results) => {
+        const roles = results.map(role => {
+            return {name:role.title, value:role.id}
+        });
+    const sql ='SELECT * FROM employee';
+    db.query(sql, (err, results) => {
+        const managers = results.map(employee => {
+            return {name:employee.first_name+' '+employee.last_name, value:employee.id}
+        });
     inquirer
     .prompt([
         {
@@ -184,20 +195,22 @@ function addEmployee() {
             name: 'lastName',
         },
         {
-            type: 'input',
-            message: 'Enter the role of this employee:',
+            type: 'list',
+            message: 'Choose the role of this employee:',
             name: 'role',
+            choices: roles,
         },
         {
-            type: 'input',
-            message: "Enter this employee's manager:",
+            type: 'list',
+            message: "Who is this employee's manager:",
             name: 'manager',
+            choices: managers,
         }
     ])
     .then((data) => {
         console.log(data);
         const sql ='INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?);';
-        db.query(sql, [data.roleName, data.salary, data.department], (err, results) => {
+        db.query(sql, [data.firstName, data.lastName, data.roles, data.managers], (err, results) => {
             if (err) {
                 console.error('Error adding employee:', err);
             } else {
@@ -206,6 +219,8 @@ function addEmployee() {
             }
         });
     });
+})
+})
 }
 
 // a function that asks the user which employee role would they like to update
